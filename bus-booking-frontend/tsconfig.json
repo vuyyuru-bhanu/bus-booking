@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es2015",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es2018",
+      "dom"
+    ]
+  },
+  "angularCompilerOptions": {
+    "entryModule": "app/app.module#AppModule"
+  },
+  "exclude": [
+    "node_modules",
+    "out-tsc"
+  ]
+}
+

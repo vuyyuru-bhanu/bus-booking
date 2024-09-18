@@ -1,0 +1,9 @@
+<div>
+  <h2>Search Buses</h2>
+  <input [(ngModel)]="searchQuery" placeholder="Search for buses">
+  <button (click)="search()">Search</button>
+  <ul>
+    <li *ngFor="let bus of buses">{{ bus.name }} - {{ bus.route }}</li>
+  </ul>
+</div>
+
