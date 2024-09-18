@@ -8,7 +8,7 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "dist/bus-booking-app",
             "index": "src/index.html",
@@ -41,6 +41,17 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-builders/custom-webpack:dev-server",
+          "options": {
+            "browserTarget": "bus-booking-app:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "bus-booking-app:build:production"
             }
           }
         }
