@@ -2,6 +2,7 @@
   "version": 1,
   "projects": {
     "bus-booking-app": {
+      "root": "src",  // Add this line to specify the root directory
       "projectType": "application",
       "schematics": {},
       "architect": {
