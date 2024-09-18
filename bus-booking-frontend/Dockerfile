@@ -12,13 +12,13 @@ RUN npm install
 COPY . .
 
 # Build the Angular application
-RUN npm run build -- --prod
+RUN npm run build -- --configuration production
 
 # Use NGINX to serve the application
 FROM nginx:alpine
 
 # Copy built files from the previous stage
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist/bus-booking-app /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
