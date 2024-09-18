@@ -1,19 +1,23 @@
 {
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "projects": {
     "bus-booking-app": {
-      "root": "src",  // Add this line to specify the root directory
       "projectType": "application",
       "schematics": {},
+      "root": "src",
+      "sourceRoot": "src",
+      "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "dist/bus-booking-app",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+            "aot": true,
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -40,18 +44,59 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "outputHashing": "none",
+              "sourceMap": true,
+              "extractCss": true,
+              "namedChunks": true,
+              "aot": false,
+              "extractLicenses": false,
+              "vendorChunk": true
             }
-          }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
             "browserTarget": "bus-booking-app:build"
           },
           "configurations": {
             "production": {
               "browserTarget": "bus-booking-app:build:production"
+            },
+            "development": {
+              "browserTarget": "bus-booking-app:build:development"
             }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-builders/custom-webpack:karma",
+          "options": {
+            "main": "src/test.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
