@@ -1,27 +1,23 @@
-# Use Node.js official image for building
-FROM node:18 AS build
+# Use the official Node.js image as a base
+FROM node:18
 
-# Set working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Install dependencies
+# Copy the package.json and package-lock.json files
 COPY package*.json ./
+
+# Install the dependencies
 RUN npm install
 
-# Copy application files
+# Copy the rest of the application code
 COPY . .
 
 # Build the Angular application
 RUN npm run build -- --configuration production
 
-# Use NGINX to serve the application
-FROM nginx:alpine
-
-# Copy built files from the previous stage
-COPY --from=build /app/dist/bus-booking-app /usr/share/nginx/html
-
-# Expose port 80
+# Expose the port the app runs on
 EXPOSE 80
 
-# Start NGINX
-CMD ["nginx", "-g", "daemon off;"]
+# Command to run the app
+CMD ["npm", "start"]
