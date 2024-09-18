@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "target": "es2015",
+      "module": "esnext",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "declaration": false,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "lib": ["es2018", "dom"],
+      "baseUrl": "./",
+      "typeRoots": ["node_modules/@types"],
+      "paths": {
+        "@/*": ["src/*"]
+      }
+    }
+  }
+  
