@@ -2,19 +2,18 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy only package.json (ignore lock file)
+# Only copy package.json to avoid stale/corrupt lock
 COPY package.json ./
 
-# Install dependencies and generate package-lock.json inside the container
+# Clean install without lock file
 RUN npm install
 
-# Copy the rest of your Angular project
+# Now copy the rest
 COPY . .
 
-# Build the Angular app
+# Optional: If build needed
 RUN npm run build
 
 EXPOSE 4200
 
-# Start the dev server
 CMD ["npm", "start"]
