@@ -1,0 +1,83 @@
+CREATE DATABASE IF NOT EXISTS bus_booking;
+
+USE bus_booking;
+
+CREATE TABLE users (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(255),
+    role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL
+);
+
+CREATE TABLE routes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    origin VARCHAR(255) NOT NULL,
+    destination VARCHAR(255) NOT NULL,
+    departure_time VARCHAR(255) NOT NULL,
+    duration INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL
+);
+
+CREATE TABLE buses (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    route_id BIGINT UNSIGNED NOT NULL,
+    company VARCHAR(255) NOT NULL,
+    ac BOOLEAN NOT NULL,
+    type ENUM('seater', 'sleeper') NOT NULL,
+    capacity INT NOT NULL,
+    available_seats INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    amenities JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    FOREIGN KEY (route_id) REFERENCES routes(id)
+);
+
+CREATE TABLE bookings (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    bus_id BIGINT UNSIGNED NOT NULL,
+    seat_number INT NOT NULL,
+    status ENUM('confirmed', 'cancelled') DEFAULT 'confirmed',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (bus_id) REFERENCES buses(id)
+);
+
+CREATE TABLE bus_images (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    bus_id BIGINT UNSIGNED NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    FOREIGN KEY (bus_id) REFERENCES buses(id)
+);
+
+CREATE TABLE notifications (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL
+);
+
+-- Seed admin user
+INSERT INTO users (email, password, name, role) VALUES (
+    'admin@busbooking.com',
+    '$2a$10$0YzvY7z0Qz7fG9z7z7z7z7z7z7z7z7z7z7z7z7z7z7z7z7z7z7z7z7z7', -- Hashed Admin123!
+    'Admin User',
+    'admin'
+);
+
+-- Seed sample routes
+INSERT

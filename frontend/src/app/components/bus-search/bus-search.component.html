@@ -1,0 +1,104 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><mat-card class="search-card">
+  <mat-card-title>Find Your Bus</mat-card-title>
+  <mat-card-content>
+    <form>
+      <mat-form-field appearance="fill">
+        <mat-label>From</mat-label>
+        <input matInput [(ngModel)]="search.origin" name="origin" placeholder="e.g., Toronto" required>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>To</mat-label>
+        <input matInput [(ngModel)]="search.destination" name="destination" placeholder="e.g., Montreal" required>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>AC/Non-AC</mat-label>
+        <mat-select [(ngModel)]="search.ac" name="ac">
+          <mat-option value="">All</mat-option>
+          <mat-option value="true">AC</mat-option>
+          <mat-option value="false">Non-AC</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Bus Type</mat-label>
+        <mat-select [(ngModel)]="search.type" name="type">
+          <mat-option value="">All</mat-option>
+          <mat-option value="seater">Seater</mat-option>
+          <mat-option value="sleeper">Sleeper</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Company</mat-label>
+        <mat-select [(ngModel)]="search.company" name="company">
+          <mat-option value="">All</mat-option>
+          <mat-option value="Greyhound">Greyhound</mat-option>
+          <mat-option value="Megabus">Megabus</mat-option>
+          <mat-option value="Orleans Express">Orleans Express</mat-option>
+          <mat-option value="Rider Express">Rider Express</mat-option>
+          <mat-option value="Ebus">Ebus</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="searchBuses()">Search Buses</button>
+    </form>
+    <div class="bus-list" *ngFor="let bus of buses">
+      <mat-card class="bus-card">
+        <img mat-card-image [src]="bus.images[0]?.imageUrl || '/assets/default-bus.jpg'" alt="Bus Image" style="max-height: 200px;">
+        <mat-card-content>
+          <h3>{{bus.company}}</h3>
+          <p>{{bus.route.origin}} to {{bus.route.destination}}</p>
+          <p>Departure: {{bus.route.departureTime | date:'short'}}</p>
+          <p>Duration: {{formatDuration(bus.route.duration)}}</p>
+          <p>Price: ${{bus.price}}</p>
+          <p>AC: {{bus.ac ? 'Yes' : 'No'}}</p>
+          <p>Type: {{bus.type | titlecase}}</p>
+          <p>Amenities: {{bus.amenities.join(', ')}}</p>
+          <p>Available Seats: {{bus.availableSeats}}</p>
+          <button mat-raised-button color="accent" [routerLink]="['/booking', bus.id]">Book Now</button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </mat-card-content>
+</mat-card>
+<style>
+  .search-card { max-width: 800px; margin: 20px auto; }
+  .bus-list { margin-top: 20px; }
+  .bus-card { margin-bottom: 20px; }
+</style>
