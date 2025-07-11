@@ -1,13 +1,17 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
+    "github.com/jinzhu/gorm"
+    "time"
 )
 
 type Booking struct {
-	gorm.Model
-	UserID     uint   `gorm:"not null"`
-	BusID      uint   `gorm:"not null"`
-	SeatNumber int    `gorm:"not null"`
-	Status     string `gorm:"type:ENUM('confirmed','cancelled');default:'confirmed'"`
+    ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+    UserID    uint      `gorm:"not null" json:"user_id"`
+    BusID     uint      `gorm:"not null" json:"bus_id"`
+    SeatNumber int      `gorm:"not null" json:"seat_number"`
+    Status    string    `gorm:"type:enum('confirmed','cancelled');default:'confirmed'" json:"status"`
+    CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+    UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+    DeletedAt *time.Time `gorm:"index" json:"deleted_at"`
 }

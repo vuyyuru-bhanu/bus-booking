@@ -1,28 +1,29 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
-	"golang.org/x/crypto/bcrypt"
+    "github.com/jinzhu/gorm"
+    "golang.org/x/crypto/bcrypt"
+    "time"
 )
 
 type User struct {
-	gorm.Model
-	Email    string `gorm:"unique;not null"`
-	Password string `gorm:"not null"`
-	Name     string
-	Role     string `gorm:"not null;default:'user'"` // 'user' or 'admin'
+    ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+    Email     string    `gorm:"type:varchar(255);unique;not null" json:"email"`
+    Password  string    `gorm:"type:varchar(255);not null" json:"password"`
+    Name      string    `gorm:"type:varchar(255)" json:"name"`
+    Role      string    `gorm:"type:enum('user','admin');default:'user';not null" json:"role"`
+    CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+    UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+    DeletedAt *time.Time `gorm:"index" json:"deleted_at"`
 }
 
-func (u *User) HashPassword(password string) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	u.Password = string(hashedPassword)
-	return nil
-}
-
-func (u *User) CheckPassword(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
-	return err == nil
+func (u *User) BeforeSave() error {
+    if u.Password != "" {
+        hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+        if err != nil {
+            return err
+        }
+        u.Password = string(hashedPassword)
+    }
+    return nil
 }

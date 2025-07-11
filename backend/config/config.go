@@ -1,26 +1,18 @@
 package config
 
 import (
-	"os"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"bus-booking/models"
+    "fmt"
+    "github.com/jinzhu/gorm"
+    _ "github.com/jinzhu/gorm/dialects/mysql"
+    "os"
 )
 
-var DB *gorm.DB
-
-func ConnectDatabase() {
-	dbHost := os.Getenv("DB_HOST")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-
-	dsn := dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":3306)/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
-	database, err := gorm.Open("mysql", dsn)
-	if err != nil {
-		panic("Failed to connect to database")
-	}
-
-	database.AutoMigrate(&models.User{}, &models.Bus{}, &models.Route{}, &models.Booking{}, &models.BusImage{}, &models.Notification{})
-	DB = database
+func ConnectDB() *gorm.DB {
+    dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+        os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
+    db, err := gorm.Open("mysql", dsn)
+    if err != nil {
+        panic("Failed to connect to database")
+    }
+    return db
 }
