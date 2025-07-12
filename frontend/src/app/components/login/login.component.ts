@@ -13,7 +13,14 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   login(): void {
-    const loginId = this.user.name ? this.user.name : this.user.email;
+    let loginId = '';
+    if (this.user.name === 'admin') {
+      // Admin login with username
+      loginId = this.user.name;
+    } else {
+      // Regular user login with email
+      loginId = this.user.email;
+    }
     this.authService.login(loginId, this.user.password).subscribe(
       () => {
         if (this.authService.isAdmin()) {
@@ -24,6 +31,7 @@ export class LoginComponent {
       },
       (error) => {
         console.error('Login failed', error);
+        alert('Login failed: ' + (error.error?.error || 'Please check your credentials.'));
       }
     );
   }

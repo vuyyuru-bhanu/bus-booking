@@ -182,3 +182,13 @@ The `init.sql` seeds:
 
 ## License
 MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+## Admin Credentials
+
+- Username: admin
+- Email: admin@busbooking.com
+- Password: Hello123@
+
+Note: Only the admin user can login with the username "admin". Regular users must login with their email and password.

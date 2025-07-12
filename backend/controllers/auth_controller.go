@@ -57,9 +57,18 @@ func Login(c *gin.Context) {
 	}
 
 	var user models.User
-	if err := config.DB.Where("email = ? OR name = ?", input.LoginId, input.LoginId).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-		return
+	// If loginId is "admin", only allow login by username "admin"
+	if input.LoginId == "admin" {
+		if err := config.DB.Where("name = ?", "admin").First(&user).Error; err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+			return
+		}
+	} else {
+		// For other users, login by email only
+		if err := config.DB.Where("email = ?", input.LoginId).First(&user).Error; err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+			return
+		}
 	}
 
 	if err := user.CheckPassword(input.Password); err != nil {
