@@ -1,7 +1,7 @@
 package models
 
 import (
-    "github.com/jinzhu/gorm"
+    
     "golang.org/x/crypto/bcrypt"
     "time"
 )
