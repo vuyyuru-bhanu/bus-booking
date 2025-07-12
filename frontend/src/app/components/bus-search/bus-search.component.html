@@ -1,56 +1,19 @@
-<div class="bus-search-container">
-  <h2>Search Buses</h2>
-  <form (ngSubmit)="searchBuses()" #searchForm="ngForm" class="search-form">
-    <div class="form-group">
-      <label for="fromRoute">From</label>
-      <select id="fromRoute" [(ngModel)]="fromRouteId" name="fromRoute" required>
-        <option value="" disabled selected>Select origin</option>
+<option value="" disabled selected>Select origin</option>
         <option *ngFor="let route of routes" [value]="route.id">{{ route.origin }}</option>
       </select>
-    </div>
-    <div class="form-group">
-      <label for="toRoute">To</label>
+=======
+      <select id="fromRoute" [(ngModel)]="fromRouteId" name="fromRoute" required>
+        <option [ngValue]="null" disabled>Select origin</option>
+        <option *ngFor="let route of routes" [value]="route.id">{{ route.origin }}</option>
+      </select>
+>>>>>>> REPLACE
+<<<<<<< SEARCH
       <select id="toRoute" [(ngModel)]="toRouteId" name="toRoute" required>
         <option value="" disabled selected>Select destination</option>
         <option *ngFor="let route of routes" [value]="route.id">{{ route.destination }}</option>
       </select>
-    </div>
-    <div class="form-group">
-      <label for="ac">AC</label>
-      <select id="ac" [(ngModel)]="ac" name="ac">
-        <option [ngValue]="null">Any</option>
-        <option [ngValue]="true">AC</option>
-        <option [ngValue]="false">Non-AC</option>
+=======
+      <select id="toRoute" [(ngModel)]="toRouteId" name="toRoute" required>
+        <option [ngValue]="null" disabled>Select destination</option>
+        <option *ngFor="let route of routes" [value]="route.id">{{ route.destination }}</option>
       </select>
-    </div>
-    <div class="form-group">
-      <label for="type">Type</label>
-      <select id="type" [(ngModel)]="type" name="type">
-        <option value="">Any</option>
-        <option value="seater">Seater</option>
-        <option value="sleeper">Sleeper</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="company">Company</label>
-      <input id="company" type="text" [(ngModel)]="company" name="company" placeholder="Company name" />
-    </div>
-    <button type="submit" [disabled]="!searchForm.form.valid">Search</button>
-  </form>
-
-  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
-
-  <div *ngIf="buses.length > 0" class="bus-results">
-    <h3>Available Buses</h3>
-    <ul>
-      <li *ngFor="let bus of buses" class="bus-item">
-        <div><strong>Company:</strong> {{ bus.company }}</div>
-        <div><strong>Type:</strong> {{ bus.type }}</div>
-        <div><strong>AC:</strong> {{ bus.ac ? 'Yes' : 'No' }}</div>
-        <div><strong>Price:</strong> ₹{{ bus.price }}</div>
-        <div><strong>Departure:</strong> {{ bus.departure_time }}</div>
-        <div><strong>Arrival:</strong> {{ bus.arrival_time }}</div>
-      </li>
-    </ul>
-  </div>
-</div>
