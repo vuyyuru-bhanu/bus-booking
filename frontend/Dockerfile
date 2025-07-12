@@ -8,15 +8,10 @@ RUN npm install
 COPY . .
 RUN npm run build -- --configuration production
 
-# Stage 2: Serve with http-server
-FROM node:20-alpine
+# Stage 2: Serve with nginx
+FROM nginx:alpine
 
-RUN npm install -g http-server
+# Copy build output to nginx html directory
+COPY --from=builder /app/dist/bus-booking-frontend /usr/share/nginx/html
 
-WORKDIR /app
-
-COPY --from=builder /app/dist/bus-booking-frontend .
-
-EXPOSE 4200
-
-ENTRYPOINT ["http-server", ".", "-p", "4200"]
+EXPOSE 80
