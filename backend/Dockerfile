@@ -2,18 +2,18 @@ FROM golang:1.21-alpine
 
 WORKDIR /app
 
-# Copy only go.mod first
+# Copy go.mod (and optionally go.sum if it exists)
 COPY go.mod ./
 
-# Generate go.sum (even if it doesn’t exist yet)
+# Download dependencies and generate go.sum
 RUN go mod tidy
 
-# Now copy the full source code
+# Copy the full application code
 COPY . .
 
-# Build the Go app
+# Build the Go application
 RUN go build -o main ./cmd
 
 EXPOSE 8080
 
-CMD ["./main"]
+ENTRYPOINT ["./main"]

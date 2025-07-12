@@ -2,9 +2,11 @@ package config
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"log"
 	"os"
+
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
@@ -17,9 +19,9 @@ func ConnectDB() {
 		os.Getenv("DB_NAME"),
 	)
 
-	db, err := gorm.Open("mysql", dsn)
+	var err error
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Failed to connect to database")
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	DB = db
 }

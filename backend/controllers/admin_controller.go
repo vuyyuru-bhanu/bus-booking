@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-
 	"mime/multipart"
+
 	"github.com/gin-gonic/gin"
 
 	"bus-booking/config"
@@ -144,4 +144,15 @@ func GetAllBookings(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"bookings": bookings})
+}
+
+func GetNotifications(c *gin.Context) {
+	var notifications []models.Notification
+
+	if err := config.DB.Find(&notifications).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch notifications"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"notifications": notifications})
 }
