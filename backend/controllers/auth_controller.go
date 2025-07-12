@@ -21,7 +21,6 @@ type RegisterInput struct {
 type LoginInput struct {
 	LoginId  string `json:"loginId" binding:"required"`
 	Password string `json:"password" binding:"required"`
-	Password string `json:"password" binding:"required"`
 }
 
 func Register(c *gin.Context) {
