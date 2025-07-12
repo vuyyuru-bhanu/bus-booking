@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"bus-booking/config"
 	"gorm.io/gorm"
 )
 
@@ -19,15 +18,15 @@ type Seat struct {
 }
 
 // GetAvailableSeats returns all available seats for a given bus ID
-func GetAvailableSeats(busID int) ([]Seat, error) {
+func GetAvailableSeats(db *gorm.DB, busID int) ([]Seat, error) {
 	var seats []Seat
-	result := config.DB.Where("bus_id = ? AND is_booked = false", busID).Find(&seats)
+	result := db.Where("bus_id = ? AND is_booked = false", busID).Find(&seats)
 	return seats, result.Error
 }
 
 // SelectSeats marks seats as booked for a given bus ID and seat numbers
-func SelectSeats(busID int, seatNumbers []int) error {
-	tx := config.DB.Begin()
+func SelectSeats(db *gorm.DB, busID int, seatNumbers []int) error {
+	tx := db.Begin()
 	for _, seatNumber := range seatNumbers {
 		result := tx.Model(&Seat{}).Where("bus_id = ? AND seat_number = ? AND is_booked = false", busID, seatNumber).Update("is_booked", true)
 		if result.RowsAffected == 0 {

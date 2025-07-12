@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"bus-booking/config"
 	"gorm.io/gorm"
 )
 
