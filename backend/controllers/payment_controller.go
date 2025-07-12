@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"backend/utils"
+	"bus-booking/utils"
 	"github.com/gin-gonic/gin"
 )
 
