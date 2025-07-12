@@ -14,7 +14,8 @@ services:
     volumes:
       - uploads:/app/uploads
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
   # frontend service removed; frontend is now built and served by nginx
 
@@ -39,6 +40,11 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "3306:3306"
 
