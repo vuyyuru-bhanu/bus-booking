@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"bus-booking/config"
 	"bus-booking/models"
@@ -22,7 +23,6 @@ func CreateBooking(c *gin.Context) {
 		return
 	}
 
-	// Get the logged-in user's ID from context (set by auth middleware)
 	userID := uint(c.MustGet("user_id").(float64))
 
 	var bus models.Bus
@@ -43,8 +43,7 @@ func CreateBooking(c *gin.Context) {
 		Status:     "confirmed",
 	}
 
-	// Use a transaction to ensure booking and seat decrement are atomic
-	err := config.DB.Transaction(func(tx *config.DB) error {
+	err := config.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(&booking).Error; err != nil {
 			return err
 		}

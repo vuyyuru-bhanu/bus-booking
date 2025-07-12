@@ -28,7 +28,6 @@ func (u *User) HashPassword(password string) error {
 }
 
 // CheckPassword verifies the given password with the hashed one
-func (u *User) CheckPassword(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
-	return err == nil
+func (u *User) CheckPassword(password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 }
