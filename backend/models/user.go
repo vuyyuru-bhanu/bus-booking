@@ -35,14 +35,6 @@ func (u *User) CheckPassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 }
 
-import (
-	"errors"
-	"time"
-
-	"bus-booking/config"
-	"gorm.io/gorm"
-)
-
 // GetUserByID returns a user by ID
 func GetUserByID(db *gorm.DB, userID int) (*User, error) {
 	var user User

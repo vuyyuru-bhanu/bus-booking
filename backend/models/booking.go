@@ -23,14 +23,6 @@ type Booking struct {
 	Bus  *Bus  `gorm:"foreignKey:BusID" json:"bus,omitempty"`
 }
 
-import (
-	"errors"
-	"time"
-
-	"bus-booking/config"
-	"gorm.io/gorm"
-)
-
 // GetBookingsByUserID returns all bookings for a given user ID
 func GetBookingsByUserID(db *gorm.DB, userID int) ([]Booking, error) {
 	var bookings []Booking
