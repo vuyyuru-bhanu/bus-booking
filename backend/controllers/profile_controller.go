@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"bus-booking/config"
 	"bus-booking/models"
 	"bus-booking/utils"
 	"github.com/gin-gonic/gin"
@@ -11,7 +12,7 @@ import (
 // GetProfile returns the profile of the authenticated user
 func GetProfile(c *gin.Context) {
 	userID := utils.GetUserIDFromContext(c)
-	user, err := models.GetUserByID(userID)
+	user, err := models.GetUserByID(config.DB, userID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
@@ -30,7 +31,7 @@ func UpdateProfile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	err := models.UpdateUserProfile(userID, input.Name, input.Email)
+	err := models.UpdateUserProfile(config.DB, userID, input.Name, input.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update profile"})
 		return

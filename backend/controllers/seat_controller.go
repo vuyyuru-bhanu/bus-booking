@@ -3,7 +3,9 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"strconv"
 
+	"bus-booking/config"
 	"bus-booking/models"
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +19,7 @@ func GetAvailableSeats(c *gin.Context) {
 		return
 	}
 
-	seats, err := models.GetAvailableSeats(busID)
+	seats, err := models.GetAvailableSeats(config.DB, busID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get available seats"})
 		return
@@ -44,7 +46,17 @@ func SelectSeats(c *gin.Context) {
 		return
 	}
 
-	err = models.SelectSeats(busID, input.Seats)
+	seatNumbers := []int{}
+	for _, seatStr := range input.Seats {
+		seatNum, err := strconv.Atoi(seatStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid seat number"})
+			return
+		}
+		seatNumbers = append(seatNumbers, seatNum)
+	}
+
+	err = models.SelectSeats(config.DB, busID, seatNumbers)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to select seats"})
 		return

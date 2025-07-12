@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"bus-booking/config"
 	"bus-booking/models"
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +18,7 @@ func GetReviews(c *gin.Context) {
 		return
 	}
 
-	reviews, err := models.GetReviewsByBusID(busID)
+	reviews, err := models.GetReviewsByBusID(config.DB, busID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get reviews"})
 		return
@@ -46,7 +47,14 @@ func AddReview(c *gin.Context) {
 		return
 	}
 
-	err = models.AddReview(busID, input.UserID, input.Rating, input.Comment)
+	review := &models.Review{
+		UserID:  input.UserID,
+		BusID:   busID,
+		Rating:  input.Rating,
+		Comment: input.Comment,
+	}
+
+	err = models.AddReview(config.DB, review)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add review"})
 		return
