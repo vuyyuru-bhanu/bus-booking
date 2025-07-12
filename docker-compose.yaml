@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   backend:
     build:
@@ -8,25 +6,17 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_HOST: mysql
-      DB_USER: bus_user
-      DB_PASSWORD: secure_password
-      DB_NAME: bus_booking
-      JWT_SECRET: your_jwt_secret_key
+      - DB_HOST=mysql
+      - DB_USER=bus_user
+      - DB_PASSWORD=secure_password
+      - DB_NAME=bus_booking
+      - JWT_SECRET=your_jwt_secret_key
     volumes:
       - uploads:/app/uploads
     depends_on:
-      mysql:
-        condition: service_healthy
-    restart: unless-stopped
+      - mysql
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "4200:4200"
-    restart: unless-stopped
+  # frontend service removed; frontend is now built and served by nginx
 
   nginx:
     build:
@@ -38,27 +28,19 @@ services:
       - uploads:/usr/share/nginx/html/uploads
     depends_on:
       - backend
-      - frontend
-    restart: unless-stopped
 
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: bus_booking
-      MYSQL_USER: bus_user
-      MYSQL_PASSWORD: secure_password
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=bus_booking
+      - MYSQL_USER=bus_user
+      - MYSQL_PASSWORD=secure_password
     volumes:
       - mysql-data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
 
 volumes:
   mysql-data:
