@@ -149,6 +149,7 @@ The script is automatically applied when the MySQL container starts.
 Configure Nginx locally to proxy requests to `localhost:8080` (backend) and `localhost:4200` (frontend), using the provided `nginx/nginx.conf` as a guide.
 
 ## Default Admin Credentials
+- **Admin URL**: `http://localhost/admin`
 - **Email**: `admin@busbooking.com`
 - **Password**: `Admin123!`
 - **Note**: Change the password in production and store sensitive data in Kubernetes Secrets or a secrets manager.

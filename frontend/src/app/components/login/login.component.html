@@ -37,27 +37,52 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><mat-card class="login-card">
-  <mat-card-title>Login</mat-card-title>
+        </script>
+<mat-card class="login-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title class="login-title">Welcome Back</mat-card-title>
+    <mat-card-subtitle>Please login to your account</mat-card-subtitle>
+  </mat-card-header>
   <mat-card-content>
-    <form>
-      <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="user.name" name="name" type="text" required>
+    <form #loginForm="ngForm" (ngSubmit)="login()" novalidate>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Username</mat-label>
+        <input matInput [(ngModel)]="user.name" name="name" type="text" [required]="!user.email" #name="ngModel" placeholder="Enter your username">
+        <mat-error *ngIf="name.invalid && name.touched">Name or Email is required</mat-error>
       </mat-form-field>
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
-        <input matInput [(ngModel)]="user.email" name="email" type="email" required>
+        <input matInput [(ngModel)]="user.email" name="email" type="email" [required]="!user.name" #email="ngModel" placeholder="Enter your email">
+        <mat-error *ngIf="email.invalid && email.touched">Email or Name is required</mat-error>
       </mat-form-field>
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Password</mat-label>
-        <input matInput [(ngModel)]="user.password" name="password" type="password" required>
+        <input matInput [(ngModel)]="user.password" name="password" type="password" required placeholder="Enter your password">
       </mat-form-field>
-      <button mat-raised-button color="primary" (click)="login()">Login</button>
-      <button mat-raised-button (click)="register()">Register</button>
+      <div class="button-group">
+        <button mat-raised-button color="primary" [disabled]="loginForm.invalid" type="submit">Login</button>
+        <button mat-stroked-button color="accent" type="button" (click)="register()">Register</button>
+      </div>
     </form>
   </mat-card-content>
 </mat-card>
+
 <style>
-  .login-card { max-width: 400px; margin: 20px auto; }
+  .login-card {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+  .login-title {
+    font-weight: 600;
+    font-size: 24px;
+  }
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+  }
 </style>
