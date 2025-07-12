@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"bus-booking/config"
 	"gorm.io/gorm"
 )
 
@@ -25,14 +26,14 @@ type Booking struct {
 // GetBookingsByUserID returns all bookings for a given user ID
 func GetBookingsByUserID(userID int) ([]Booking, error) {
 	var bookings []Booking
-	result := db.Preload("Bus").Preload("User").Where("user_id = ?", userID).Find(&bookings)
+	result := config.DB.Preload("Bus").Preload("User").Where("user_id = ?", userID).Find(&bookings)
 	return bookings, result.Error
 }
 
 // GetBookingByIDAndUserID returns a booking by ID and user ID
 func GetBookingByIDAndUserID(bookingID string, userID int) (*Booking, error) {
 	var booking Booking
-	result := db.Preload("Bus").Preload("User").Where("id = ? AND user_id = ?", bookingID, userID).First(&booking)
+	result := config.DB.Preload("Bus").Preload("User").Where("id = ? AND user_id = ?", bookingID, userID).First(&booking)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("booking not found")
 	}

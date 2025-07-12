@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"bus-booking/config"
 	"gorm.io/gorm"
 )
 
@@ -24,12 +25,12 @@ type Review struct {
 // GetReviewsByBusID returns all reviews for a given bus ID
 func GetReviewsByBusID(busID int) ([]Review, error) {
 	var reviews []Review
-	result := db.Preload("User").Where("bus_id = ?", busID).Find(&reviews)
+	result := config.DB.Preload("User").Where("bus_id = ?", busID).Find(&reviews)
 	return reviews, result.Error
 }
 
 // AddReview adds a new review
 func AddReview(review *Review) error {
-	result := db.Create(review)
+	result := config.DB.Create(review)
 	return result.Error
 }

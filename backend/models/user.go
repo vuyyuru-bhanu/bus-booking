@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"bus-booking/config"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -37,7 +38,7 @@ func (u *User) CheckPassword(password string) error {
 // GetUserByID returns a user by ID
 func GetUserByID(userID int) (*User, error) {
 	var user User
-	result := db.First(&user, userID)
+	result := config.DB.First(&user, userID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("user not found")
 	}
@@ -47,11 +48,11 @@ func GetUserByID(userID int) (*User, error) {
 // UpdateUserProfile updates the user's name and email
 func UpdateUserProfile(userID int, name string, email string) error {
 	var user User
-	result := db.First(&user, userID)
+	result := config.DB.First(&user, userID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return errors.New("user not found")
 	}
 	user.Name = name
 	user.Email = email
-	return db.Save(&user).Error
+	return config.DB.Save(&user).Error
 }
