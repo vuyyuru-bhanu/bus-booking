@@ -12,7 +12,7 @@ RUN npm run build -- --configuration production
 # Stage 2: Serve with nginx
 FROM nginx:alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
 # Copy build output to nginx html directory
 COPY --from=builder /app/dist/bus-booking-frontend /usr/share/nginx/html
 
