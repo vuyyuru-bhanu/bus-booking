@@ -1,0 +1,38 @@
+/* Modern main layout styles */
+.main-header {
+  background: #1976d2;
+  color: #fff;
+  padding: 1rem 2rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.main-nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  background: #eee;
+  padding: 0.5rem 0;
+  margin-bottom: 2rem;
+}
+.main-nav a {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.main-nav a.active, .main-nav a:hover {
+  background: #1976d2;
+  color: #fff;
+}
+
+.main-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+}
