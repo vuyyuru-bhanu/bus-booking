@@ -47,7 +47,13 @@
       </mat-form-field>
       <mat-form-field appearance="fill">
         <mat-label>Company</mat-label>
-        <input matInput [(ngModel)]="bus.company" name="company" required>
+        <mat-select [(ngModel)]="bus.company" name="company" required>
+          <mat-option value="City Travel Co">City Travel Co</mat-option>
+          <mat-option value="Express Rides">Express Rides</mat-option>
+          <mat-option value="Rapid Transit">Rapid Transit</mat-option>
+          <mat-option value="Metro Bus Lines">Metro Bus Lines</mat-option>
+          <mat-option value="National Express">National Express</mat-option>
+        </mat-select>
       </mat-form-field>
       <mat-form-field appearance="fill">
         <mat-label>AC</mat-label>
