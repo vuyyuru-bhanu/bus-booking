@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  user = { email: '', password: '' };
+  user = { name: '', email: '', password: '' };
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -34,6 +34,11 @@ export class LoginComponent {
       },
       (error) => {
         console.error('Registration failed', error);
+        if (error && error.error && error.error.error) {
+          alert('Registration failed: ' + error.error.error);
+        } else {
+          alert('Registration failed. Please check your input.');
+        }
       }
     );
   }
