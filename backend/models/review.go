@@ -23,14 +23,14 @@ type Review struct {
 }
 
 // GetReviewsByBusID returns all reviews for a given bus ID
-func GetReviewsByBusID(busID int) ([]Review, error) {
+func GetReviewsByBusID(db *gorm.DB, busID int) ([]Review, error) {
 	var reviews []Review
-	result := config.DB.Preload("User").Where("bus_id = ?", busID).Find(&reviews)
+	result := db.Preload("User").Where("bus_id = ?", busID).Find(&reviews)
 	return reviews, result.Error
 }
 
 // AddReview adds a new review
-func AddReview(review *Review) error {
-	result := config.DB.Create(review)
+func AddReview(db *gorm.DB, review *Review) error {
+	result := db.Create(review)
 	return result.Error
 }

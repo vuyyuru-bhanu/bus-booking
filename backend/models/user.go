@@ -35,10 +35,18 @@ func (u *User) CheckPassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 }
 
+import (
+	"errors"
+	"time"
+
+	"bus-booking/config"
+	"gorm.io/gorm"
+)
+
 // GetUserByID returns a user by ID
-func GetUserByID(userID int) (*User, error) {
+func GetUserByID(db *gorm.DB, userID int) (*User, error) {
 	var user User
-	result := config.DB.First(&user, userID)
+	result := db.First(&user, userID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("user not found")
 	}
@@ -46,13 +54,13 @@ func GetUserByID(userID int) (*User, error) {
 }
 
 // UpdateUserProfile updates the user's name and email
-func UpdateUserProfile(userID int, name string, email string) error {
+func UpdateUserProfile(db *gorm.DB, userID int, name string, email string) error {
 	var user User
-	result := config.DB.First(&user, userID)
+	result := db.First(&user, userID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return errors.New("user not found")
 	}
 	user.Name = name
 	user.Email = email
-	return config.DB.Save(&user).Error
+	return db.Save(&user).Error
 }
