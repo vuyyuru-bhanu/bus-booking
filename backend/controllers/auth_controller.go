@@ -57,19 +57,10 @@ func Login(c *gin.Context) {
 	}
 
 	var user models.User
-	// If loginId is "admin", only allow login by username "admin"
-	if input.LoginId == "admin" {
-		// Query admin user by email instead of name
-		if err := config.DB.Where("email = ?", "admin@busbooking.com").First(&user).Error; err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-			return
-		}
-	} else {
-		// For other users, login by email only
-		if err := config.DB.Where("email = ?", input.LoginId).First(&user).Error; err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-			return
-		}
+	// Unified login logic: login by email for all users including admin
+	if err := config.DB.Where("email = ?", input.LoginId).First(&user).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
 	}
 
 	if err := user.CheckPassword(input.Password); err != nil {
