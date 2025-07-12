@@ -7,21 +7,24 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	// Public routes
-	r.POST("/register", controllers.Register)
-	r.POST("/login", controllers.Login)
-	r.GET("/notifications", controllers.GetNotifications)
+	// Group all API routes under /api
+	api := r.Group("/api")
 
-	// Protected routes
-	protected := r.Group("/api")
+	// Public routes
+	api.POST("/register", controllers.Register)
+	api.POST("/login", controllers.Login)
+	api.GET("/notifications", controllers.GetNotifications)
+
+	// Protected routes (require user authentication)
+	protected := api.Group("/")
 	protected.Use(middleware.AuthMiddleware())
 	{
 		protected.GET("/buses", controllers.GetBuses)
 		protected.POST("/bookings", controllers.CreateBooking)
 	}
 
-	// Admin routes
-	admin := r.Group("/api/admin")
+	// Admin routes (require admin role)
+	admin := api.Group("/admin")
 	admin.Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
 	{
 		admin.POST("/routes", controllers.CreateRoute)
