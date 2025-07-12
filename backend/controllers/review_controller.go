@@ -48,8 +48,8 @@ func AddReview(c *gin.Context) {
 	}
 
 	review := &models.Review{
-		UserID:  input.UserID,
-		BusID:   busID,
+		UserID:  uint(input.UserID),
+		BusID:   uint(busID),
 		Rating:  input.Rating,
 		Comment: input.Comment,
 	}
