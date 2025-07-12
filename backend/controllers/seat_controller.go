@@ -3,7 +3,6 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-	"strconv"
 
 	"bus-booking/config"
 	"bus-booking/models"
