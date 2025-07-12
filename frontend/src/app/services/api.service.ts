@@ -10,8 +10,15 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  getBuses(search: any): Observable<any> {
-    return this.http.get(this.apiUrl + '/buses', { params: search });
+  getBuses(origin: string, destination: string, ac: boolean, type: string, company: string): Observable<any> {
+    const params: any = {
+      origin,
+      destination,
+      ac: ac.toString(),
+      type,
+      company
+    };
+    return this.http.get(this.apiUrl + '/buses', { params });
   }
 
   createBooking(booking: any): Observable<any> {
