@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"bus-booking/config"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
