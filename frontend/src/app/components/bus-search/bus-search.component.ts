@@ -1,6 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
-import { Router } from '@angular/router';
+
+interface Route {
+  id: number;
+  origin: string;
+  destination: string;
+}
+
+interface Bus {
+  id: number;
+  company: string;
+  type: string;
+  ac: boolean;
+  route: Route;
+  price: number;
+  departure_time: string;
+  arrival_time: string;
+}
 
 @Component({
   selector: 'app-bus-search',
@@ -8,33 +24,47 @@ import { Router } from '@angular/router';
   styleUrls: ['./bus-search.component.css']
 })
 export class BusSearchComponent implements OnInit {
-  search = {
-    origin: '',
-    destination: '',
-    ac: '',
-    type: '',
-    company: ''
-  };
-  buses: any[] = [];
+  routes: Route[] = [];
+  fromRouteId: number | null = null;
+  toRouteId: number | null = null;
+  ac: boolean | null = null;
+  type: string = '';
+  company: string = '';
+  buses: Bus[] = [];
+  errorMessage: string = '';
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(private apiService: ApiService) {}
 
-  ngOnInit(): void {}
-
-  searchBuses(): void {
-    this.apiService.getBuses(this.search).subscribe(
-      (response: any) => {
-        this.buses = response.buses;
-      },
-      (error) => {
-        console.error('Error fetching buses', error);
-      }
-    );
+  ngOnInit(): void {
+    this.loadRoutes();
   }
 
-  formatDuration(minutes: number): string {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}h ${mins}m`;
+  loadRoutes(): void {
+    this.apiService.getRoutes().subscribe({
+      next: (data) => {
+        this.routes = data.routes;
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to load routes';
+      }
+    });
+  }
+
+  searchBuses(): void {
+    if (!this.fromRouteId || !this.toRouteId) {
+      this.errorMessage = 'Please select both origin and destination';
+      return;
+    }
+    this.errorMessage = '';
+    const origin = this.routes.find(r => r.id === this.fromRouteId)?.origin || '';
+    const destination = this.routes.find(r => r.id === this.toRouteId)?.destination || '';
+    this.apiService.getBuses(origin, destination, this.ac, this.type, this.company).subscribe({
+      next: (data) => {
+        this.buses = data.buses;
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to load buses';
+      }
+    });
   }
 }

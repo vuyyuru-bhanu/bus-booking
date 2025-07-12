@@ -59,7 +59,8 @@ func Login(c *gin.Context) {
 	var user models.User
 	// If loginId is "admin", only allow login by username "admin"
 	if input.LoginId == "admin" {
-		if err := config.DB.Where("name = ?", "admin").First(&user).Error; err != nil {
+		// Query admin user by email instead of name
+		if err := config.DB.Where("email = ?", "admin@busbooking.com").First(&user).Error; err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 			return
 		}

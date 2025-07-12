@@ -1,0 +1,93 @@
+.admin-dashboard-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+h2, h3 {
+  color: #d32f2f;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.messages {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.success-message {
+  color: #388e3c;
+  font-weight: 600;
+}
+
+.add-user-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #555;
+}
+
+input, select {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button {
+  padding: 10px;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #b71c1c;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th, .users-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.users-table th {
+  background-color: #f2f2f2;
+  font-weight: 700;
+}
+
+.users-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.users-table button {
+  margin-right: 5px;
+}

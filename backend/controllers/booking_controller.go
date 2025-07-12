@@ -63,3 +63,21 @@ func CreateBooking(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"booking": booking})
 }
+
+// CancelBooking cancels a booking by ID
+func CancelBooking(c *gin.Context) {
+	id := c.Param("id")
+	var booking models.Booking
+	if err := config.DB.First(&booking, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
+		return
+	}
+
+	booking.Status = "cancelled"
+	if err := config.DB.Save(&booking).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to cancel booking"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Booking cancelled successfully"})
+}

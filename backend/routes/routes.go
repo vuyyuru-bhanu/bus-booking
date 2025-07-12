@@ -14,6 +14,7 @@ func SetupRoutes(r *gin.Engine) {
 	api.POST("/register", controllers.Register)
 	api.POST("/login", controllers.Login)
 	api.GET("/notifications", controllers.GetNotifications)
+	api.GET("/routes", controllers.GetRoutes)
 
 	// Protected routes (require user authentication)
 	protected := api.Group("/")
@@ -32,6 +33,13 @@ func SetupRoutes(r *gin.Engine) {
 		admin.POST("/buses/:bus_id/image", controllers.UploadBusImage)
 		admin.POST("/notifications", controllers.CreateNotification)
 		admin.GET("/bookings", controllers.GetAllBookings)
+
+		admin.GET("/users", controllers.GetUsers)
+		admin.POST("/users", controllers.CreateUser)
+		admin.PUT("/users/:id", controllers.UpdateUser)
+		admin.DELETE("/users/:id", controllers.DeleteUser)
+
+		admin.PUT("/bookings/:id/cancel", controllers.CancelBooking)
 	}
 
 	// Serve static files (bus images)

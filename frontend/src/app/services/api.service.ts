@@ -11,32 +11,52 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   getBuses(search: any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/buses`, { params: search });
+    return this.http.get(this.apiUrl + '/buses', { params: search });
   }
 
   createBooking(booking: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/bookings`, booking);
+    return this.http.post(this.apiUrl + '/bookings', booking);
   }
 
   createRoute(route: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/admin/routes`, route);
+    return this.http.post(this.apiUrl + '/admin/routes', route);
   }
 
   createBus(bus: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/admin/buses`, bus);
+    return this.http.post(this.apiUrl + '/admin/buses', bus);
   }
 
   uploadBusImage(busId: number, image: File): Observable<any> {
     const formData = new FormData();
     formData.append('image', image);
-    return this.http.post(`${this.apiUrl}/admin/buses/${busId}/image`, formData);
+    return this.http.post(this.apiUrl + '/admin/buses/' + busId + '/image', formData);
   }
 
   createNotification(notification: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/admin/notifications`, notification);
+    return this.http.post(this.apiUrl + '/admin/notifications', notification);
   }
 
   getNotifications(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/notifications`);
+    return this.http.get(this.apiUrl + '/notifications');
+  }
+
+  getRoutes(): Observable<any> {
+    return this.http.get(this.apiUrl + '/routes');
+  }
+
+  getUsers(): Observable<any> {
+    return this.http.get(this.apiUrl + '/admin/users');
+  }
+
+  createUser(user: any): Observable<any> {
+    return this.http.post(this.apiUrl + '/admin/users', user);
+  }
+
+  updateUser(id: number, user: any): Observable<any> {
+    return this.http.put(this.apiUrl + '/admin/users/' + id, user);
+  }
+
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(this.apiUrl + '/admin/users/' + id);
   }
 }
