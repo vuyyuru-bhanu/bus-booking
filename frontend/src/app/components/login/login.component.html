@@ -4,11 +4,16 @@
     <mat-card-subtitle>Please login to your account</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <form #loginForm="ngForm" (ngSubmit)="login()" novalidate>
+      <form #loginForm="ngForm" (ngSubmit)="login()" novalidate>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Username or Email</mat-label>
         <input matInput [(ngModel)]="user.name" name="name" type="text" required placeholder="Enter your username or email" />
         <mat-error *ngIf="loginForm.submitted && !user.name">Username or Email is required</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="user.email" name="email" type="email" required placeholder="Enter your email" />
+        <mat-error *ngIf="loginForm.submitted && !user.email">Email is required</mat-error>
       </mat-form-field>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Password</mat-label>
@@ -19,7 +24,7 @@
         <button mat-raised-button color="primary" [disabled]="loginForm.invalid" type="submit">Login</button>
         <button mat-stroked-button color="accent" type="button" (click)="register()">Register</button>
       </div>
-    </form>
+      </form>
   </mat-card-content>
 </mat-card>
 
