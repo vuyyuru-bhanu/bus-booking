@@ -1,29 +1,22 @@
-# Use a specific Node.js version or a newer version like 20.x if required
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
-# Set working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available) for consistent installs
-COPY package.json package-lock.json ./
-
-# Install dependencies
+COPY package*.json ./
 RUN npm install
 
-# Optional: Run npm audit and fix vulnerabilities (without breaking changes)
-RUN npm audit fix
-
-# Optional: Use `--force` to fix vulnerabilities even if breaking changes are involved
-# RUN npm audit fix --force
-
-# Copy the rest of your application files
 COPY . .
+RUN npm run build -- --configuration production
 
-# Optional: Run build if required for production
-RUN npm run build
+# Stage 2: Serve with http-server
+FROM node:20-alpine
 
-# Expose the port your app runs on
+RUN npm install -g http-server
+
+WORKDIR /app
+
+COPY --from=builder /app/dist/bus-booking-frontend .
+
 EXPOSE 4200
 
-# Start the application
-CMD ["npm", "start"]
+ENTRYPOINT ["http-server", ".", "-p", "4200"]
