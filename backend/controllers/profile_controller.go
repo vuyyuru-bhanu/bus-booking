@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"bus-booking/models"
-	"bus-booking/utils"
+	"backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
