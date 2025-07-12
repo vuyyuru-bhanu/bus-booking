@@ -22,6 +22,21 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		protected.GET("/buses", controllers.GetBuses)
 		protected.POST("/bookings", controllers.CreateBooking)
+
+		protected.GET("/profile", controllers.GetProfile)
+		protected.PUT("/profile", controllers.UpdateProfile)
+
+		protected.POST("/payments", controllers.InitiatePayment)
+		protected.GET("/payments/:payment_id", controllers.GetPaymentStatus)
+
+		protected.GET("/bookings/history", controllers.GetBookingHistory)
+		protected.GET("/bookings/history/:id", controllers.GetBookingDetails)
+
+		protected.GET("/buses/:bus_id/seats", controllers.GetAvailableSeats)
+		protected.POST("/buses/:bus_id/seats", controllers.SelectSeats)
+
+		protected.GET("/buses/:bus_id/reviews", controllers.GetReviews)
+		protected.POST("/buses/:bus_id/reviews", controllers.AddReview)
 	}
 
 	// Admin routes (require admin role)
