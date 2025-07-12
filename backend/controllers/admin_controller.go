@@ -1,57 +1,28 @@
 package controllers
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 	"path/filepath"
 	"strings"
+	"strconv"
+
+	"mime/multipart"
 	"github.com/gin-gonic/gin"
+
 	"bus-booking/config"
 	"bus-booking/models"
 )
 
-type RouteInput struct {
-	Origin        string `json:"origin" binding:"required"`
-	Destination   string `json:"destination" binding:"required"`
-	DepartureTime string `json:"departure_time" binding:"required"`
-	Duration      int    `json:"duration" binding:"required"` // Duration in minutes
-}
-
 type BusInput struct {
-	RouteID       uint    `json:"route_id" binding:"required"`
-	Company       string  `json:"company" binding:"required"`
-	AC            bool    `json:"ac" binding:"required"`
-	Type          string  `json:"type" binding:"required,oneof=seater sleeper"`
-	Capacity      int     `json:"capacity" binding:"required"`
-	AvailableSeats int    `json:"available_seats" binding:"required"`
-	Price         float64 `json:"price" binding:"required"`
-	Amenities     []string `json:"amenities"`
-}
-
-type NotificationInput struct {
-	Message string `json:"message" binding:"required"`
-}
-
-func CreateRoute(c *gin.Context) {
-	var input RouteInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	route := models.Route{
-		Origin:        input.Origin,
-		Destination:   input.Destination,
-		DepartureTime: input.DepartureTime,
-		Duration:      input.Duration,
-	}
-
-	if err := config.DB.Create(&route).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create route"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"route": route})
+	RouteID        uint     `json:"route_id"`
+	Company        string   `json:"company"`
+	AC             bool     `json:"ac"`
+	Type           string   `json:"type"`
+	Capacity       int      `json:"capacity"`
+	AvailableSeats int      `json:"available_seats"`
+	Price          float64  `json:"price"`
+	Amenities      []string `json:"amenities"`
 }
 
 func CreateBus(c *gin.Context) {
@@ -61,105 +32,116 @@ func CreateBus(c *gin.Context) {
 		return
 	}
 
+	amenitiesJSON, err := json.Marshal(input.Amenities)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encode amenities"})
+		return
+	}
+
 	bus := models.Bus{
-		RouteID:       input.RouteID,
-		Company:       input.Company,
-		AC:            input.AC,
-		Type:          input.Type,
-		Capacity:      input.Capacity,
+		RouteID:        input.RouteID,
+		Company:        input.Company,
+		AC:             input.AC,
+		Type:           input.Type,
+		Capacity:       input.Capacity,
 		AvailableSeats: input.AvailableSeats,
-		Price:         input.Price,
-		Amenities:     input.Amenities,
+		Price:          input.Price,
+		Amenities:      string(amenitiesJSON),
 	}
 
 	if err := config.DB.Create(&bus).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create bus"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"bus": bus})
 }
 
-func UploadBusImage(c *gin.Context) {
-	busID := c.Param("bus_id")
-	file, err := c.FormFile("image")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Image file required"})
-		return
+func isValidImage(file *multipart.FileHeader) bool {
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	switch ext {
+	case ".jpg", ".jpeg", ".png":
+		return true
+	default:
+		return false
 	}
-
-	// Validate file type and size (JPEG/PNG, max 5MB)
-	if !isValidImage(file) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image format or size"})
-		return
-	}
-
-	filename := fmt.Sprintf("%s-%s", busID, file.Filename)
-	filePath := filepath.Join("uploads", filename)
-	if err := c.SaveUploadedFile(file, filePath); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
-		return
-	}
-
-	image := models.BusImage{
-		BusID:    uint(c.MustGet("bus_id").(float64)),
-		ImageURL: "/uploads/" + filename,
-	}
-
-	if err := config.DB.Create(&image).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image record"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"image": image})
 }
 
-func CreateNotification(c *gin.Context) {
-	var input NotificationInput
-	if err := c.ShouldBindJSON(&input); err != nil {
+func CreateRoute(c *gin.Context) {
+	var route models.Route
+	if err := c.ShouldBindJSON(&route); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	notification := models.Notification{
-		Message: input.Message,
+	if err := config.DB.Create(&route).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"route": route})
+}
+
+func UploadBusImage(c *gin.Context) {
+	busIDParam := c.Param("busId")
+	busID, err := strconv.ParseUint(busIDParam, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid bus ID"})
+		return
+	}
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid form data"})
+		return
+	}
+
+	files := form.File["images"]
+	var savedImages []models.BusImage
+
+	for _, file := range files {
+		if !isValidImage(file) {
+			continue
+		}
+		filename := filepath.Base(file.Filename)
+		savePath := filepath.Join("uploads", filename)
+
+		if err := c.SaveUploadedFile(file, savePath); err != nil {
+			continue
+		}
+
+		image := models.BusImage{
+			BusID:    uint(busID),
+			ImageURL: "/uploads/" + filename,
+		}
+		config.DB.Create(&image)
+		savedImages = append(savedImages, image)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"uploaded": savedImages})
+}
+
+func CreateNotification(c *gin.Context) {
+	var notification models.Notification
+	if err := c.ShouldBindJSON(&notification); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	if err := config.DB.Create(&notification).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create notification"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"notification": notification})
 }
 
-func GetNotifications(c *gin.Context) {
-	var notifications []models.Notification
-	if err := config.DB.Find(&notifications).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch notifications"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"notifications": notifications})
-}
-
 func GetAllBookings(c *gin.Context) {
 	var bookings []models.Booking
-	if err := config.DB.Find(&bookings).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch bookings"})
+	if err := config.DB.Preload("User").Preload("Bus").Find(&bookings).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"bookings": bookings})
-}
-
-func isValidImage(file *multipart.FileHeader) bool {
-	allowedExt := []string{".jpg", ".jpeg", ".png"}
-	ext := strings.ToLower(filepath.Ext(file.Filename))
-	for _, validExt := range allowedExt {
-		if ext == validExt {
-			return file.Size <= 5*1024*1024 // Max 5MB
-		}
-	}
-	return false
 }

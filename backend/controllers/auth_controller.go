@@ -2,12 +2,14 @@ package controllers
 
 import (
 	"net/http"
+	"os"
 	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+
 	"bus-booking/config"
 	"bus-booking/models"
-	"os"
 )
 
 type RegisterInput struct {
@@ -60,7 +62,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if !user.CheckPassword(input.Password) {
+	if err := user.CheckPassword(input.Password); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}

@@ -1,29 +1,34 @@
 package models
 
 import (
-    
-    "golang.org/x/crypto/bcrypt"
-    "time"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-    ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
-    Email     string    `gorm:"type:varchar(255);unique;not null" json:"email"`
-    Password  string    `gorm:"type:varchar(255);not null" json:"password"`
-    Name      string    `gorm:"type:varchar(255)" json:"name"`
-    Role      string    `gorm:"type:enum('user','admin');default:'user';not null" json:"role"`
-    CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-    UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
-    DeletedAt *time.Time `gorm:"index" json:"deleted_at"`
+	ID        uint       `gorm:"primaryKey;autoIncrement" json:"id"`
+	Email     string     `gorm:"type:varchar(255);unique;not null" json:"email"`
+	Password  string     `gorm:"type:varchar(255);not null" json:"-"`
+	Name      string     `gorm:"type:varchar(255)" json:"name"`
+	Role      string     `gorm:"type:enum('user','admin');default:'user';not null" json:"role"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `gorm:"index" json:"deleted_at"`
 }
 
-func (u *User) BeforeSave() error {
-    if u.Password != "" {
-        hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-        if err != nil {
-            return err
-        }
-        u.Password = string(hashedPassword)
-    }
-    return nil
+// HashPassword hashes the user password
+func (u *User) HashPassword(password string) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	u.Password = string(bytes)
+	return nil
+}
+
+// CheckPassword verifies the given password with the hashed one
+func (u *User) CheckPassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
 }

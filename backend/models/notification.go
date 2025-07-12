@@ -1,10 +1,13 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type Notification struct {
-	gorm.Model
-	Message string `gorm:"type:TEXT;not null"`
+	ID        uint       `gorm:"primaryKey;autoIncrement" json:"id"`
+	Message   string     `gorm:"type:text;not null" json:"message"`
+	CreatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	DeletedAt *time.Time `gorm:"index" json:"deleted_at,omitempty"`
 }

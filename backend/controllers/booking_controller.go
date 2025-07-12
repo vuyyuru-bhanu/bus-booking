@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/gin"
+
 	"bus-booking/config"
 	"bus-booking/models"
 )
@@ -12,6 +14,7 @@ type BookingInput struct {
 	SeatNumber int  `json:"seat_number" binding:"required"`
 }
 
+// CreateBooking handles POST /bookings to create a new booking for a user.
 func CreateBooking(c *gin.Context) {
 	var input BookingInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -19,6 +22,7 @@ func CreateBooking(c *gin.Context) {
 		return
 	}
 
+	// Get the logged-in user's ID from context (set by auth middleware)
 	userID := uint(c.MustGet("user_id").(float64))
 
 	var bus models.Bus
@@ -39,14 +43,22 @@ func CreateBooking(c *gin.Context) {
 		Status:     "confirmed",
 	}
 
-	if err := config.DB.Create(&booking).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create booking"})
-		return
-	}
+	// Use a transaction to ensure booking and seat decrement are atomic
+	err := config.DB.Transaction(func(tx *config.DB) error {
+		if err := tx.Create(&booking).Error; err != nil {
+			return err
+		}
 
-	bus.AvailableSeats--
-	if err := config.DB.Save(&bus).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update bus seats"})
+		bus.AvailableSeats--
+		if err := tx.Save(&bus).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create booking"})
 		return
 	}
 
