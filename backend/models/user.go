@@ -1,9 +1,11 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type User struct {
@@ -30,4 +32,26 @@ func (u *User) HashPassword(password string) error {
 // CheckPassword verifies the given password with the hashed one
 func (u *User) CheckPassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+}
+
+// GetUserByID returns a user by ID
+func GetUserByID(userID int) (*User, error) {
+	var user User
+	result := db.First(&user, userID)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, errors.New("user not found")
+	}
+	return &user, result.Error
+}
+
+// UpdateUserProfile updates the user's name and email
+func UpdateUserProfile(userID int, name string, email string) error {
+	var user User
+	result := db.First(&user, userID)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return errors.New("user not found")
+	}
+	user.Name = name
+	user.Email = email
+	return db.Save(&user).Error
 }
