@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"bus-booking/models"
-	"backend/utils"
+	"bus-booking/utils"
 	"github.com/gin-gonic/gin"
 )
 
