@@ -56,8 +56,11 @@ export class BusSearchComponent implements OnInit {
       return;
     }
     this.errorMessage = '';
-    const origin = this.routes.find(r => r.id === this.fromRouteId)?.origin || '';
-    const destination = this.routes.find(r => r.id === this.toRouteId)?.destination || '';
+    // Convert fromRouteId and toRouteId to numbers in case they are strings
+    const fromId = typeof this.fromRouteId === 'string' ? parseInt(this.fromRouteId, 10) : this.fromRouteId;
+    const toId = typeof this.toRouteId === 'string' ? parseInt(this.toRouteId, 10) : this.toRouteId;
+    const origin = this.routes.find(r => r.id === fromId)?.origin || '';
+    const destination = this.routes.find(r => r.id === toId)?.destination || '';
     this.apiService.getBuses(origin, destination, this.ac, this.type, this.company).subscribe({
       next: (data) => {
         this.buses = data.buses;
