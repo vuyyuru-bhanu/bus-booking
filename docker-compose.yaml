@@ -16,6 +16,7 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    restart: always
 
   # frontend service removed; frontend is now built and served by nginx
 
@@ -29,6 +30,7 @@ services:
       - uploads:/usr/share/nginx/html/uploads
     depends_on:
       - backend
+    restart: always
 
   mysql:
     image: mysql:8.0
@@ -41,7 +43,7 @@ services:
       - mysql-data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -20,8 +21,17 @@ func ConnectDB() {
 	)
 
 	var err error
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	for i := 0; i < 30; i++ {
+		DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		if err == nil {
+			log.Println("Successfully connected to the database")
+			return
+		}
+		log.Printf("Failed to connect to database (attempt %d/30): %v", i+1, err)
+		time.Sleep(2 * time.Second)
+	}
+
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Could not connect to database after retries: %v", err)
 	}
 }
