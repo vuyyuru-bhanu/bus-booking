@@ -3,10 +3,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY ../frontend/package*.json ./
+COPY frontend/package*.json ./
 RUN npm install
 
-COPY ../frontend .
+COPY frontend .
 RUN npm run build -- --configuration production
 
 # Stage 2: Serve with nginx
