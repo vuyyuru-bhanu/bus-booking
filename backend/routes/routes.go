@@ -9,6 +9,7 @@ import (
 func SetupRoutes(r *gin.Engine) {
 	// Group all API routes under /api
 	api := r.Group("/api")
+	api.Use(middleware.CORSMiddleware())
 
 	// Public routes
 	api.POST("/register", controllers.Register)
